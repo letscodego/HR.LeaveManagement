@@ -15,12 +15,20 @@ namespace HR.LeaveManagement.Application.Features.LeaveRequests.Handlers.Command
 
         public ILeaveRequestRepository LeaveRequestRepository { get; }
         public IMapper Mapper { get; }
-    
-    public async Task<Unit> Handle(UpdateLeaveRequestCommand request, CancellationToken cancellationToken)
+
+        public async Task<Unit> Handle(UpdateLeaveRequestCommand request, CancellationToken cancellationToken)
         {
-            var leaveRequest = await LeaveRequestRepository.Get(request.UpdateLeaveRequestDto.Id);
-            Mapper.Map(request.UpdateLeaveRequestDto, leaveRequest);
-            await LeaveRequestRepository.Update(leaveRequest);
+            var leaveRequest = await LeaveRequestRepository.Get(request.Id);
+            
+            if(request.LeaveRequestDto != null)
+            {
+                Mapper.Map(request.LeaveRequestDto, leaveRequest);
+                await LeaveRequestRepository.Update(leaveRequest);
+            }
+            else if (request.ChangeLeaveRequestApprovalDto != null)
+            {
+                await LeaveRequestRepository.ChangeApprovalStatus(leaveRequest, request.ChangeLeaveRequestApprovalDto.Approved);
+            }
             return Unit.Value;
         }
     }
