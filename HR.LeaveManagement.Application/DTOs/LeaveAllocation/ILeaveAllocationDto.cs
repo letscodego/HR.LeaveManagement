@@ -1,6 +1,4 @@
-﻿using HR.LeaveManagement.Application.DTOs.LeaveType;
-
-namespace HR.LeaveManagement.Application.DTOs.LeaveAllocation
+﻿namespace HR.LeaveManagement.Application.DTOs.LeaveAllocation
 {
     public interface ILeaveAllocationDto
     {
