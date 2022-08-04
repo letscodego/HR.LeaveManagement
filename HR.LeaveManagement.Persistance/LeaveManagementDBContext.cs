@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HR.LeaveManagement.Persistence
 {
-    public abstract class LeaveManagementDBContext : DbContext
+    public class LeaveManagementDBContext : DbContext
     {
         public LeaveManagementDBContext(DbContextOptions<LeaveManagementDBContext> dbContextOptions)
             : base(dbContextOptions)
