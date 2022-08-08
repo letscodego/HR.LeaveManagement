@@ -1,4 +1,6 @@
 using Hanssens.Net;
+using HR.LeaveManagement.MVC.Contracts;
+using HR.LeaveManagement.MVC.Services;
 using HR.LeaveManagement.MVC.Services.Base;
 using System.Reflection;
 
@@ -9,6 +11,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient<IClient, Client>(cl => cl.BaseAddress = new Uri("https://localhost:44367"));
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddSingleton<ILocalStorage, LocalStorage>();
+builder.Services.AddSingleton<ILeaveTypeService, LeaveTypeService>();
 
 
 builder.Services.AddControllersWithViews();
