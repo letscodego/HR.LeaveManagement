@@ -19,7 +19,7 @@ namespace HR.LeaveManagement.MVC.Services
         public IClient Httpclient { get; }
         public ILocalStorageService LocalStorageService { get; }
 
-        public async Task<Response<int>> CreateLeaveType(LeaveTypeVM leaveType)
+        public async Task<Response<int>> CreateLeaveType(CreateLeaveTypeVM leaveType)
         {
             try
             {

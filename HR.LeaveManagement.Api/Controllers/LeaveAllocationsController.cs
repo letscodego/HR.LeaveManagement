@@ -49,7 +49,7 @@ namespace HR.LeaveManagement.Api.Controllers
         public async Task<ActionResult> Put([FromBody] UpdateLeaveAllocationDto updateLeaveAllocationDto)
         {
              await _mediator.Send(new UpdateLeaveAllocationCommand() { UpdateLeaveAllocationDto = updateLeaveAllocationDto });
-            return NoContent();
+            return Ok();
         }
 
         // DELETE api/<LeaveAllocationsController>/5
@@ -57,7 +57,7 @@ namespace HR.LeaveManagement.Api.Controllers
         public async Task<ActionResult> Delete(int id)
         {
             await _mediator.Send(new DeleteLeaveAllocationCommand() { Id = id });
-            return NoContent();
+            return Ok();
         }
     }
 }

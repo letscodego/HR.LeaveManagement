@@ -53,7 +53,7 @@ namespace HR.LeaveManagement.Api.Controllers
                 LeaveRequestDto = updateLeaveRequestDto,
                 Id = id
             });
-            return NoContent();
+            return Ok();
         }
 
         // PUT api/<LeaveRequestsController>/changeapproval/7
@@ -65,7 +65,7 @@ namespace HR.LeaveManagement.Api.Controllers
                 ChangeLeaveRequestApprovalDto = changeLeaveRequestApprovalDto,
                 Id = id
             });
-            return NoContent();
+            return Ok();
         }
 
         // DELETE api/<LeaveRequestsController>/5
@@ -73,7 +73,7 @@ namespace HR.LeaveManagement.Api.Controllers
         public async Task<ActionResult> Delete(int id)
         {
             await _mediator.Send(new DeleteLeaveRequestCommand() { Id = id });
-            return NoContent();
+            return Ok();
         }
     }
 }
