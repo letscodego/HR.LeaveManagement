@@ -20,15 +20,41 @@ public class UsersController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(LoginVM loginVM, string returnUrl)
     {
-        returnUrl ??= Url.Content("~/");
-        var isLoggedIn = await AuthenticationService.AuthenticateAsync(loginVM.Email, loginVM.Password);
-        if (isLoggedIn)
+        if (ModelState.IsValid)
         {
-            return LocalRedirect(returnUrl);
+            returnUrl ??= Url.Content("~/");
+            var isLoggedIn = await AuthenticationService.AuthenticateAsync(loginVM.Email, loginVM.Password);
+            if (isLoggedIn)
+                return LocalRedirect(returnUrl);
         }
-
-        ModelState.AddModelError(string.Empty, "Log In Attempt Failed! Please try again.");
-
+        ModelState.AddModelError("", "Log In Attempt Failed. Please try again.");
         return View(loginVM);
+    }
+
+    public IActionResult Register()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Register(RegisterVM registerVM)
+    {
+        if (ModelState.IsValid)
+        {
+            var returnUrl = Url.Content("~/");
+            var isCreated = await AuthenticationService.RegisterAsync(registerVM);
+            if (isCreated)
+                return LocalRedirect(returnUrl);
+        }
+        ModelState.AddModelError("", "Registration Attempt Failed. Please try again.");
+        return View(registerVM);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Logout(string returnUrl)
+    {
+        returnUrl ??= Url.Content("~/");
+        await AuthenticationService.Logout();
+        return LocalRedirect(returnUrl);
     }
 }

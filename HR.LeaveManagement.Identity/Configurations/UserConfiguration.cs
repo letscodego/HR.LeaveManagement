@@ -19,7 +19,7 @@ public class UserConfiguration : IEntityTypeConfiguration<ApplicationUser>
                 LastName = "Admin",
                 NormalizedUserName = "ADMIN@SEESHARP.COM",
                 NormalizedEmail = "ADMIN@SEESHARP.COM",
-                PasswordHash = hasher.HashPassword(null, "@llou!"),
+                PasswordHash = hasher.HashPassword(null, "@lloU!1"),
                 EmailConfirmed = true
             },
             new ApplicationUser()

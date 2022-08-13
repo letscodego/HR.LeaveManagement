@@ -1895,10 +1895,10 @@ namespace HR.LeaveManagement.MVC.Services.Base
         [System.ComponentModel.DataAnnotations.Required]
         public string Email { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("usernam", Required = Newtonsoft.Json.Required.Always)]
+        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         [System.ComponentModel.DataAnnotations.StringLength(int.MaxValue, MinimumLength = 6)]
-        public string Usernam { get; set; }
+        public string Username { get; set; }
 
         [Newtonsoft.Json.JsonProperty("password", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]

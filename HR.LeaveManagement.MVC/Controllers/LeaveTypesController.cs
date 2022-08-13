@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HR.LeaveManagement.MVC.Controllers
 {
-    [Authorize]
+    [Authorize(Roles ="Administrator")]
     public class LeaveTypesController : Controller
     {
         public ILeaveTypeService LeaveTypeService { get; }

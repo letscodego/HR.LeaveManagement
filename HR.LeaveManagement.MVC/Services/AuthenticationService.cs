@@ -1,4 +1,6 @@
-﻿using HR.LeaveManagement.MVC.Contracts;
+﻿using AutoMapper;
+using HR.LeaveManagement.MVC.Contracts;
+using HR.LeaveManagement.MVC.Models;
 using HR.LeaveManagement.MVC.Services.Base;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -9,18 +11,21 @@ namespace HR.LeaveManagement.MVC.Services;
 public class AuthenticationService : BaseHttpService, Contracts.IAuthenticationService
 {
     private readonly JwtSecurityTokenHandler _tokenHandler;
-    public AuthenticationService(IClient httpclient, ILocalStorageService localStorageService, IHttpContextAccessor httpContextAccessor)
+    public AuthenticationService(IClient httpclient, ILocalStorageService localStorageService, IHttpContextAccessor httpContextAccessor,
+        IMapper mapper)
             : base(httpclient, localStorageService)
     {
         LocalStorageService = localStorageService;
         HttpContextAccessor = httpContextAccessor;
-        _tokenHandler = new JwtSecurityTokenHandler();
+		Mapper = mapper;
+		_tokenHandler = new JwtSecurityTokenHandler();
     }
 
     public ILocalStorageService LocalStorageService { get; }
     public IHttpContextAccessor HttpContextAccessor { get; }
+	public IMapper Mapper { get; }
 
-    public async Task<bool> AuthenticateAsync(string email, string password)
+	public async Task<bool> AuthenticateAsync(string email, string password)
     {
         try
         {
@@ -52,21 +57,15 @@ public class AuthenticationService : BaseHttpService, Contracts.IAuthenticationS
         await HttpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 
-    public async Task<bool> RegisterAsync(string firstName, string lastName, string username, string email, string password)
+    public async Task<bool> RegisterAsync(RegisterVM registerVM)
     {
-        RegistrationRequest registrationRequest = new()
-        {
-            FirstName = firstName,
-            LastName = lastName,
-            Usernam = username,
-            Email = email,
-            Password = password
-        };
 
-        var response = await Client.RegisterAsync(registrationRequest);
+        var registeration = Mapper.Map<RegistrationRequest>(registerVM);
+        var response = await Client.RegisterAsync(registeration);
         if (response == null) return false;
         if (!string.IsNullOrEmpty(response.UserId))
         {
+            await AuthenticateAsync(registeration.Email, registeration.Password);
             return true;
         }
         return false;
