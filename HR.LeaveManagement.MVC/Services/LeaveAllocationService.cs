@@ -19,17 +19,17 @@ namespace HR.LeaveManagement.MVC.Services
         public IClient Httpclient { get; }
         public ILocalStorageService LocalStorageService { get; }
 
-        public async Task<Response<int>> CreateLeaveAllocation(LeaveAllocationVM leaveAllocation)
+        public async Task<Response<int>> CreateLeaveAllocation(int leaveTypeId)
         {
             try
             {
                 var response = new Response<int>();
-                var createLeaveAllocation = Mapper.Map<CreateLeaveAllocationDto>(leaveAllocation);
+                CreateLeaveAllocationDto createLeaveAllocation = new() { LeaveTypeId = leaveTypeId };
+                AddBearerToken();
                 var apiResponse = await Client.LeaveAllocationsPOSTAsync(createLeaveAllocation);
                 if (apiResponse.Success)
                 {
                     response.Success = true;
-                    response.Data = apiResponse.Id;
                 }
                 else
                 {
