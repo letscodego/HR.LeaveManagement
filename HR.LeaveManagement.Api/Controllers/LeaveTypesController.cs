@@ -42,6 +42,7 @@ namespace HR.LeaveManagement.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
+        [Authorize(Roles ="Administration")]
         public async Task<ActionResult<BaseCommandResponse>> Post([FromBody] CreateLeaveTypeDto createLeaveTypeDto)
         {
             var response = await _mediator.Send(new CreateLeaveTypeCommand() { LeaveTypeDto= createLeaveTypeDto });
@@ -64,6 +65,7 @@ namespace HR.LeaveManagement.Api.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
+        [Authorize(Roles = "Administration")]
         public async Task<ActionResult> Delete(int id)
         {
             await _mediator.Send(new DeleteLeaveTypeCommand() { Id = id });

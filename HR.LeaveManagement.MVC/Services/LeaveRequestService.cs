@@ -18,12 +18,29 @@ namespace HR.LeaveManagement.MVC.Services
         public IMapper Mapper { get; }
         public IClient Httpclient { get; }
         public ILocalStorageService LocalStorageService { get; }
-        public async Task<Response<int>> CreateLeaveRequest(LeaveRequestVM leaveRequest)
+
+        public async Task ApproveLeaveRequest(int id, bool approved)
+        {
+            AddBearerToken();
+            try
+            {
+                var request = new ChangeLeaveRequestApprovalDto { Approved = approved, Id = id };
+                await Client.ChangeapprovalAsync(id, request);
+            }
+            catch (ApiException ex)
+            {
+                throw;
+                //return ConvertApiExceptions<int>(ex);
+            }
+        }
+
+        public async Task<Response<int>> CreateLeaveRequest(CreateLeaveRequestVM leaveRequest)
         {
             try
             {
                 var response = new Response<int>();
                 var createLeaveRequest = Mapper.Map<CreateLeaveRequestDto>(leaveRequest);
+                AddBearerToken();
                 var apiResponse = await Client.LeaveRequestsPOSTAsync(createLeaveRequest);
                 if (apiResponse.Success)
                 {
@@ -47,29 +64,54 @@ namespace HR.LeaveManagement.MVC.Services
             }
         }
 
-        public async Task<Response<int>> DeleteLeaveRequest(int id)
+        public async Task DeleteLeaveRequest(int id)
         {
-            try
+            AddBearerToken();
+            await Client.LeaveRequestsDELETEAsync(id);
+        }
+
+        public async Task<AdminLeaveRequestViewVM> GetAdminLeaveRequestList()
+        {
+            AddBearerToken();
+            var leaveRequests = await Client.LeaveRequestsAllAsync(isLoggedInUser: false);
+
+            var model = new AdminLeaveRequestViewVM
             {
-                await Client.LeaveRequestsDELETEAsync(id);
-                return new Response<int>() { Success = true };
-            }
-            catch (ApiException ex)
-            {
-                return ConvertApiExceptions<int>(ex);
-            }
+                TotalRequests = leaveRequests.Count,
+                ApprovedRequests = leaveRequests.Count(q => q.Approved == true),
+                PendingRequests = leaveRequests.Count(q => q.Approved == null),
+                RejectedRequests = leaveRequests.Count(q => q.Approved == false),
+                LeaveRequests = Mapper.Map<List<LeaveRequestVM>>(leaveRequests)
+            };
+            return model;
         }
 
         public async Task<LeaveRequestVM> GetLeaveRequest(int id)
         {
+            AddBearerToken();
             var leaveRequest = await Client.LeaveRequestsGETAsync(id);
             return Mapper.Map<LeaveRequestVM>(leaveRequest);
         }
 
         public async Task<List<LeaveRequestVM>> GetLeaveRequests()
         {
-            var leaveRequests = await Client.LeaveRequestsAllAsync();
+            AddBearerToken();
+            var leaveRequests = await Client.LeaveRequestsAllAsync(false);
             return Mapper.Map<List<LeaveRequestVM>>(leaveRequests);
+        }
+
+        public async Task<EmployeeLeaveRequestViewVM> GetUserLeaveRequest()
+        {
+            AddBearerToken();
+            var leaveRequests = await Client.LeaveRequestsAllAsync(isLoggedInUser: true);
+            var allocations = await Client.LeaveAllocationsAllAsync(isLoggedInUser: true);
+            var model = new EmployeeLeaveRequestViewVM
+            {
+                LeaveAllocations = Mapper.Map<List<LeaveAllocationVM>>(allocations),
+                LeaveRequests = Mapper.Map<List<LeaveRequestVM>>(leaveRequests)
+            };
+
+            return model;
         }
 
         public async Task<Response<int>> UpdateLeaveRequest(int id, LeaveRequestVM leaveRequest)
@@ -77,6 +119,7 @@ namespace HR.LeaveManagement.MVC.Services
             try
             {
                 var leaveRequestDto = Mapper.Map<UpdateLeaveRequestDto>(leaveRequest);
+                AddBearerToken();
                 await Client.LeaveRequestsPUTAsync(id, leaveRequestDto);
 
                 return new Response<int>() { Success = true };

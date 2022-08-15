@@ -12,6 +12,7 @@ builder.Services.ConfigurApplicationServices();
 builder.Services.ConfigureInfrastructureServices(configuration);
 builder.Services.ConfigurPersistenceServices(configuration);
 builder.Services.ConfigureIdentityServices(configuration);
+builder.Services.AddHttpContextAccessor();
 
 AddSwaggerDoc(builder.Services);
 builder.Services.AddControllers();

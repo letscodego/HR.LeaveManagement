@@ -1,5 +1,4 @@
-﻿using HR.LeaveManagement.Application.DTOs.LeaveRequest;
-using HR.LeaveManagement.Domain;
+﻿using HR.LeaveManagement.Domain;
 
 namespace HR.LeaveManagement.Application.Contracts.Persistence
 {
@@ -7,6 +6,7 @@ namespace HR.LeaveManagement.Application.Contracts.Persistence
     {
         Task<LeaveRequest> GetLeaveRequestWithDetails(int id);
         Task<List<LeaveRequest>> GetLeaveRequestsWithDetails();
+        Task<List<LeaveRequest>> GetLeaveRequestsWithDetails(string userId);
         Task ChangeApprovalStatus(LeaveRequest leaveRequest, bool? approved);
     }
 }

@@ -67,12 +67,6 @@ namespace HR.LeaveManagement.MVC.Services
             return Mapper.Map<LeaveAllocationVM>(leaveAllocation);
         }
 
-        public async Task<List<LeaveAllocationVM>> GetLeaveAllocations()
-        {
-            var leaveAllocations = await Client.LeaveAllocationsAllAsync();
-            return Mapper.Map<List<LeaveAllocationVM>>(leaveAllocations);
-        }
-
         public async Task<Response<int>> UpdateLeaveAllocation(LeaveAllocationVM leaveAllocation)
         {
             try

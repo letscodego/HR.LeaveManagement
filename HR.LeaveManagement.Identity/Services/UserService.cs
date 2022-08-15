@@ -24,4 +24,15 @@ public class UserService : IUserService
             Email = employee.Email
         }).ToList();
     }
+    public async Task<Employee> GetEmployee(string userId)
+    {
+        var employee = await UserManager.FindByIdAsync(userId);
+        return new Employee
+        {
+            Email = employee.Email,
+            Id = employee.Id,
+            FirstName = employee.FirstName,
+            LastName = employee.LastName
+        };
+    }
 }
