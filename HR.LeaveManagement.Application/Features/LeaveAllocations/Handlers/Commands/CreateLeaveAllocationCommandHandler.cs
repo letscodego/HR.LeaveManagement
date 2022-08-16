@@ -11,26 +11,24 @@ namespace HR.LeaveManagement.Application.Features.LeaveAllocations.Handlers.Comm
 {
     public class CreateLeaveAllocationCommandHandler : IRequestHandler<CreateLeaveAllocationCommand, BaseCommandResponse>
     {
-        public CreateLeaveAllocationCommandHandler(ILeaveAllocationRepository leaveAllocationRepository,
+        public CreateLeaveAllocationCommandHandler(IUnitOfWork unitOfWork,
             IMapper mapper,
-            ILeaveTypeRepository leaveTypeRepository,
             IUserService userService)
         {
-            LeaveAllocationRepository = leaveAllocationRepository;
+            UnitOfWork = unitOfWork;
             Mapper = mapper;
-            LeaveTypeRepository = leaveTypeRepository;
             UserService = userService;
         }
-        public ILeaveTypeRepository LeaveTypeRepository { get; }
+
         public IUserService UserService { get; }
-        public ILeaveAllocationRepository LeaveAllocationRepository { get; }
+        public IUnitOfWork UnitOfWork { get; }
         public IMapper Mapper { get; }
 
         public async Task<BaseCommandResponse> Handle(CreateLeaveAllocationCommand request, CancellationToken cancellationToken)
         {
             var response = new BaseCommandResponse();
 
-            var validator = new CreateLeaveAllocationDtoValidator(LeaveTypeRepository);
+            var validator = new CreateLeaveAllocationDtoValidator(UnitOfWork.LeaveTypeRepository);
             var validationResult = await validator.ValidateAsync(request.LeaveAllocationDto, cancellationToken);
 
             if (!validationResult.IsValid)
@@ -41,14 +39,14 @@ namespace HR.LeaveManagement.Application.Features.LeaveAllocations.Handlers.Comm
                 return response;
             }
 
-            var leaveType = await LeaveTypeRepository.Get(request.LeaveAllocationDto.LeaveTypeId);
+            var leaveType = await UnitOfWork.LeaveTypeRepository.Get(request.LeaveAllocationDto.LeaveTypeId);
             var employees = await UserService.GetEmployees();
             var period = DateTime.Now.Year;
             var allocations = new List<LeaveAllocation>();
 
             foreach (var item in employees)
             {
-                if (await LeaveAllocationRepository.AllocationExists(item.Id, leaveType.Id, period))
+                if (await UnitOfWork.LeaveAllocationRepository.AllocationExists(item.Id, leaveType.Id, period))
                     continue;
                 allocations.Add(new LeaveAllocation
                 {
@@ -60,7 +58,9 @@ namespace HR.LeaveManagement.Application.Features.LeaveAllocations.Handlers.Comm
             }
 
             if(allocations.Count > 0)
-                await LeaveAllocationRepository.AddAllocations(allocations);
+                await UnitOfWork.LeaveAllocationRepository.AddAllocations(allocations);
+
+            await UnitOfWork.Save();
 
             //var leaveAllocation = Mapper.Map<LeaveAllocation>(request.LeaveAllocationDto);
             //leaveAllocation = await LeaveAllocationRepository.Add(leaveAllocation);

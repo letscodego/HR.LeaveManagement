@@ -11,34 +11,34 @@ namespace HR.LeaveManagement.Application.Features.LeaveAllocations.Handlers.Comm
 {
     public class UpdateLeaveAllocationCommandHandler : IRequestHandler<UpdateLeaveAllocationCommand, Unit>
     {
-        public UpdateLeaveAllocationCommandHandler(ILeaveAllocationRepository leaveAllocationRepository, 
+        public UpdateLeaveAllocationCommandHandler(IUnitOfWork unitOfWork, 
             IMapper mapper,
-            ILeaveTypeRepository leaveTypeRepository,
             IEmailSender emailSender)
 
         {
-            LeaveAllocationRepository = leaveAllocationRepository;
+            UnitOfWork = unitOfWork;
             Mapper = mapper;
-            LeaveTypeRepository = leaveTypeRepository;
             EmailSender = emailSender;
         }
-        public ILeaveTypeRepository LeaveTypeRepository { get; }
-        public ILeaveAllocationRepository LeaveAllocationRepository { get; }
+
+        public IUnitOfWork UnitOfWork { get; }
         public IMapper Mapper { get; }
         public IEmailSender EmailSender { get; }
 
         public async Task<Unit> Handle(UpdateLeaveAllocationCommand request, CancellationToken cancellationToken)
         {
-            var validator = new UpdateLeaveAllocationDtoValidator(LeaveTypeRepository);
+            var validator = new UpdateLeaveAllocationDtoValidator(UnitOfWork.LeaveTypeRepository);
             var validationResult = await validator.ValidateAsync(request.UpdateLeaveAllocationDto, cancellationToken);
 
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult);
 
-            var leaveAllocation = await LeaveAllocationRepository.Get(request.UpdateLeaveAllocationDto.Id);
+            var leaveAllocation = await UnitOfWork.LeaveAllocationRepository.Get(request.UpdateLeaveAllocationDto.Id);
             Mapper.Map(request.UpdateLeaveAllocationDto, leaveAllocation);
 
-            await LeaveAllocationRepository.Update(leaveAllocation);
+            await UnitOfWork.LeaveAllocationRepository.Update(leaveAllocation);
+            await UnitOfWork.Save();
+
             try
             {
                 await EmailSender.SendEmailAsync(new Email()

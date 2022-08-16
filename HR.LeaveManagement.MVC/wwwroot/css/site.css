@@ -16,3 +16,7 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.label-as-badge {
+    border-radius: 1em;
+}

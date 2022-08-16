@@ -8,21 +8,23 @@ namespace HR.LeaveManagement.Application.Features.LeaveTypes.Handlers.Commands
 {
     public class DeleteLeaveTypeCommandHandler : IRequestHandler<DeleteLeaveTypeCommand>
     {
-        public ILeaveTypeRepository LeaveTypeRepository { get; }
+        public IUnitOfWork UnitOfWork { get; }
 
-        public DeleteLeaveTypeCommandHandler(ILeaveTypeRepository leaveTypeRepository)
+        public DeleteLeaveTypeCommandHandler(IUnitOfWork unitOfWork)
         {
-            LeaveTypeRepository = leaveTypeRepository;
+            UnitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(DeleteLeaveTypeCommand request, CancellationToken cancellationToken)
         {
-            var leaveType = await LeaveTypeRepository.Get(request.Id);
+            var leaveType = await UnitOfWork.LeaveTypeRepository.Get(request.Id);
 
             if(leaveType == null) 
                 throw new NotFoundException(nameof(LeaveType), request.Id);
 
-            await LeaveTypeRepository.Delete(leaveType);
+            await UnitOfWork.LeaveTypeRepository.Delete(leaveType);
+            await UnitOfWork.Save();
+
             return Unit.Value;
         }
     }

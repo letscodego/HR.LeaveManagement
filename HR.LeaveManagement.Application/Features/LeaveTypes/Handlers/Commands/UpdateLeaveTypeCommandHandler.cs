@@ -9,12 +9,12 @@ namespace HR.LeaveManagement.Application.Features.LeaveTypes.Handlers.Commands
 {
     public class UpdateLeaveTypeCommandHandler : IRequestHandler<UpdateLeaveTypeCommand, Unit>
     {
-        public ILeaveTypeRepository LeaveTypeRepository { get; }
+        public IUnitOfWork UnitOfWork { get; }
         public IMapper Mapper { get; }
 
-        public UpdateLeaveTypeCommandHandler(ILeaveTypeRepository leaveTypeRepository, IMapper mapper)
+        public UpdateLeaveTypeCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            LeaveTypeRepository = leaveTypeRepository;
+            UnitOfWork = unitOfWork;
             Mapper = mapper;
         }
 
@@ -26,10 +26,12 @@ namespace HR.LeaveManagement.Application.Features.LeaveTypes.Handlers.Commands
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult);
 
-            var leaveType = await LeaveTypeRepository.Get(request.LeaveTypeDto.Id);
+            var leaveType = await UnitOfWork.LeaveTypeRepository.Get(request.LeaveTypeDto.Id);
             Mapper.Map(request.LeaveTypeDto, leaveType);
 
-            await LeaveTypeRepository.Update(leaveType);
+            await UnitOfWork.LeaveTypeRepository.Update(leaveType);
+            await UnitOfWork.Save();
+
             return Unit.Value;
         }
     }
