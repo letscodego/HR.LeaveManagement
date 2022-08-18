@@ -45,6 +45,9 @@ namespace HR.LeaveManagement.Application.Features.LeaveRequests.Handlers.Command
                 if (request.ChangeLeaveRequestApprovalDto.Approved)
                 {
                     var allocation = await UnitOfWork.LeaveAllocationRepository.GetUserAllocations(leaveRequest.RequestingEmployeeId, leaveRequest.LeaveTypeId);
+                    if (allocation == null)
+                        throw new NotFoundException(nameof(allocation), leaveRequest.RequestingEmployeeId);
+
                     int dayRequested = (int)(leaveRequest.EndDate - leaveRequest.StartDate).TotalDays;
 
                     allocation.NumberOfDays -= dayRequested;

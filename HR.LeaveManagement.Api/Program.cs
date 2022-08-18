@@ -1,3 +1,4 @@
+using HR.LeaveManagement.Api.Middleware;
 using HR.LeaveManagement.Application;
 using HR.LeaveManagement.Identity;
 using HR.LeaveManagement.Infrastructure;
@@ -31,8 +32,11 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-
+    app.UseDeveloperExceptionPage();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
+
 
 app.UseAuthentication();
 

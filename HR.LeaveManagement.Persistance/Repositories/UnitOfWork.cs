@@ -7,9 +7,9 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly LeaveManagementDBContext _context;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private ILeaveAllocationRepository _leaveAllocationRepository;
-    private ILeaveTypeRepository _leaveTypeRepository;
-    private ILeaveRequestRepository _leaveRequestRepository;
+    private ILeaveAllocationRepository? _leaveAllocationRepository;
+    private ILeaveTypeRepository? _leaveTypeRepository;
+    private ILeaveRequestRepository? _leaveRequestRepository;
 
 
     public UnitOfWork(LeaveManagementDBContext context, IHttpContextAccessor httpContextAccessor)

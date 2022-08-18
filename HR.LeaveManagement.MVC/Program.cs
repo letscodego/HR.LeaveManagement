@@ -1,5 +1,5 @@
-using Hanssens.Net;
 using HR.LeaveManagement.MVC.Contracts;
+using HR.LeaveManagement.MVC.Middleware;
 using HR.LeaveManagement.MVC.Services;
 using HR.LeaveManagement.MVC.Services.Base;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -40,6 +40,7 @@ else
 {
     app.UseDeveloperExceptionPage();
 }
+
 app.UseCookiePolicy();
 app.UseAuthentication();
 
@@ -47,7 +48,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseMiddleware<RequestMiddleware>();
 app.UseAuthorization();
 
 app.MapControllerRoute(
